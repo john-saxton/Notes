@@ -16,3 +16,18 @@ Computer system consists of levels
     -Operating system operates in supervisor mode, and is protected from user changes. System software and other software run in user mode, where the
     user is in control.
 Operating System is intended to present the user with an extended or virtual machine that is easier to program than the underlying hardware. This is a top-down view, bottom-up view would be that the OS is there to manage the pieces of a complex system. Orderly and controlled allocation of processors, memories, I/O devices.
+
+OS Concepts
+  System Calls
+    -Extended instructions that provide an interface between the operating system and user programs
+  Processes
+    -a program in execution, associated with its address space (a list of memory locations which the process can read and write) which includes the
+      program itself, the program's data, and its stack.
+    -also associated is a set of registers including the program counter, stack pointer, and other information needed to run the program
+    -in a multiprogramming system, a process needs to be able to run, be stopped periodically, and be started back up again in the same state as when
+    it stopped. This means all information about the program has to be saved somewhere during suspension.
+    -in many OSes this data is stored in a process table, an array of process data
+    -a suspended process consists of its core image (address space) and its process table entry
+    -key system calls are those dealing with creating and terminating processes. others include memory requests, wait for a child process to terminate
+  Files
+    -system calls to create/remove/read/write/open/close files and directories
