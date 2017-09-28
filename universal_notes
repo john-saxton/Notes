@@ -1,3 +1,8 @@
 #List of everything I trip over
 
 Finding when you first logged on to a computer "last" lists user logins in reverse order
+Set alias for ssh targets in ~/.ssh like:
+  Host aliasname
+    HostName realhostname.domain
+    User username
+
