@@ -6,3 +6,8 @@ Set alias for ssh targets in ~/.ssh like:
     HostName realhostname.domain
     User username
 
+comment blocks of code in vim:
+  Ctrl+V for VISUAL BLOCK mode
+  select the lines
+  Shift+I for insert, then hit the comment character you want to insert
+  ESC, takes a second, then inserts
