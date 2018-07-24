@@ -1,0 +1,65 @@
+Destroy snapshots with holds:
+potentialy multiple holds per snapshot, so programmatically read in the holds and release them, then delete:
+  for i in `zfs list -Hrt snapshot [dataset] | awk '{print $1}'`; do for j in `zfs holds -H $i | awk '{print $2}'`; do zfs release $j $i; done; zfs destroy -nv $i; done
+
+Scrub tuning:
+This is a full notes dump; you won’t care about the first bit that you put in /etc/system, since that’s what effects changes to the behavior at boot.
+
+The latter with mdb are what you’ll want
+
+--
+
+
+
+# Scrub speedups
+The /etc/system changes are straight forward:
+
+* Prioritize resilvering by setting the delay to zero
+set zfs:zfs_resilver_delay = 0
+
+* Prioritize scrubs by setting the delay to zero
+set zfs:zfs_scrub_delay = 0
+
+* set maximum number of inflight IOs to a reasonable value - this number will vary for your environment
+set zfs:zfs_top_maxinflight = 128
+
+* resilver for five seconds per TXG
+set zfs:zfs_resilver_min_time_ms = 5000
+
+The default value here is three seconds. By giving resilver five seconds per transaction group we can rebuild the mirror more quickly.
+
+Now, to make these changes take effect immediately so you dont have to reboot, you can execute the following:
+
+echo zfs_resilver_delay/w0 | mdb -kw
+echo zfs_scrub_delay/w0 |mdb -kw
+echo zfs_top_maxinflight/w7f |mdb -kw
+echo zfs_resilver_min_time_ms/w1388 |mdb -kw
+
+These variables and more can be found in dsl_scan.c
+
+        echo 'zfs_scrub_delay/D' | mdb -k
+        echo 'zfs_scan_idle/D' | mdb -k
+
+Will show you current values: defaults are:
+
+root@lc-rs-storage03:/etc/inet# echo 'zfs_scrub_delay/D' | mdb -k
+zfs_scrub_delay:
+zfs_scrub_delay:4            
+
+root@lc-rs-storage03:/etc/inet#  echo 'zfs_scan_idle/D' | mdb -k  
+zfs_scan_idle:
+zfs_scan_idle:  50      
+
+You can play with the numbers a bit, but I found that if I set scan_idle 
+echo 'zfs_scan_idle/W0t20'| sudo mdb -kw
+
+
+and scrub delay
+echo 'zfs_scrub_delay/W0t0' | sudo mdb -kw
+
+It would speed up the scrub significantly.
+
+On a non-sick system (or really busy one) you may only have to adjust
+
+scrub_delay subtly, say to 2, and maybe leave scan_idle at 50, or adjust it to 30 or 40 to see an increase.
+it to 30 or 40 to see an increase.

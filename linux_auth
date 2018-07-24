@@ -1,0 +1,67 @@
+How does authentication happen in *nix?
+
+## PAM ##
+Pluggable Authentication Modules
+ Traditionally authentication was hard coded into an application. This made
+it a pain to implement a new authentication framework
+ PAM avoids this by providing an interface that applications can use for
+authentication without knowing the details of it. With PAM you can "plug in"
+different authentication methods without rewriting the client application.
+ PAM's configuration file provides a mapping from the applications service
+name to a selection of modules that provide authentication services. 
+ When a pam-aware application with a file in /etc/pam.d/, the PAM library 
+loads the configuration for the specified service and constructs four 
+module chains (one for each facility). If no facilities are specified, 
+the configuration for the "other" service is used instead.
+
+PAM config files have at least three fields:
+  Module Type - tells what authentication to use, modules can be stacked 
+              which sets multiple user authentication requirements. This is
+              the first field in the config file.
+    -auth
+      determines user identity, usually via password
+    -account
+      determines whether the user is authorized to use the service
+    -password
+      provides a mechanism for the user to change password
+    -session
+      things to do before/after user authentication. (mount/unmount home)
+
+ PAM modules can be stacked, the application doesn't know about individual
+successes or failure, just the pass/fail of the whole stack.
+ Control flags determine how each module affects pass/fail of stack. Modules
+in the stack are executed in their listed order in the config file.
+Control type - determines individual module's effect on full stack. This
+                is the second field in the config file.
+    -requisite
+      module must succeed for stack to pass, if it fails authentication
+      stops immediately.
+    -required
+      module must succeed for stack to pass, if it fails authentication 
+      continues.
+    -sufficient
+      success is sufficient to pass the stack.
+    -optional
+      not critical to pass/fail unless this is the only module for the 
+      service.
+
+Module Path - tells PAM which module to use. defaults to looking in
+              /usr/lib/security (the default PAM module dir). This is the 
+              third field in the config file.
+Module Arguments - further fields in the config file are arguments to the module. such as debug, no_warn, use_first_pass, etc.
+
+Some common pam modules:
+-pam_deny.so: denies authentication and tells no one
+-pam_warn.so: logs a syslog message about authentication attempt. stack
+             after pam_deny.so to deny and notfiy.
+-pam_unix.so: traditional unix authentication. 
+          account- establishes validity of user and pass can advise or force
+                   pass change.
+             auth- checks password against databases, configuration is in
+                  /etc/nsswitch.conf
+         password- change user password
+          session- logs username and session type to syslog
+
+-pam_access.so: intercepts user name and pass, if the name is ftp or anony
+               -mous the password is split at @ into PAM_USER and PAM_RHOST
+

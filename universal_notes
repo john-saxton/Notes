@@ -1,13 +1,24 @@
 #List of everything I trip over
 
+### ssh ###
 Finding when you first logged on to a computer "last" lists user logins in reverse order
 Set alias for ssh targets in ~/.ssh like:
   Host aliasname
     HostName realhostname.domain
     User username
 
+### vim ###
 comment blocks of code in vim:
   Ctrl+V for VISUAL BLOCK mode
   select the lines
   Shift+I for insert, then hit the comment character you want to insert
   ESC, takes a second, then inserts
+
+### svn ###
+view difference in most recent commit
+svn diff -rPREV path/to/file
+
+
+### awk ###
+get sum of numbers in column of mydatafile
+awk '{s+=$1} END {printf "%.0f", s}' mydatafile

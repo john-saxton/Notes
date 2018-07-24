@@ -1,0 +1,57 @@
+20180720
+-Ask doug about OI load, quotes for 2x homes - ARGON-1632
+   quote is obtained, needs SFP modules added
+   hoping to resolve OI load on Purley before putting in order
+-quote for HP JBOD argon scratch
+  joe hadn't forwarded contact info on this
++check LC networking, get 1104 addresses
+  connected fiber to LC nodes
+  requested IPs on 1104
+-itf-rs-store19 OS  ITSRS-6005
+-lc-rs-storage20 OS ITSRS-5796
++storage01 winbind (worked on but not finished by a long shot)
+  * winbind sort of works, but unable to connect to samba share. I suspect
+    hostname differences may be at play. The interface 172.30.13.24 is
+    itf-rs-storage01.its.uiowa.edu but puppet and AD are configured with
+    itf-rs-storage01.hpc.uiowa.edu.
+-/Data/PrecisionMapping, get HPC automounting
++OI Booting
+  #Hyper-Threading:
+  Advanced tab > "CPU Configuration"
+  Set to Disabled
+
+  #4G Encoding:
+  Advanced tab > "PCIe/PCI/PnP Configuration"
+  The setting is actually "Above 4G Decoding"  [Disabled]
+
+  It does not look like xhci0 is in our current BIOS settings.
+  This probably has to do with disabling the usb 3 xhci driver.
+
+  Also trying ACPI -> WHEA support to Disabled and Intel VT-d IO passthrough to disabled
+  BSD BTX bootloader manual https://people.freebsd.org/~jhb/docs/loader.txt
+
+  All result in complete failure to boot OI
+
+20180723
+-argon homes order
+    still working on OI load
+-OI Booting
+    Gary sent questions, sent a response
+    Gary sent another option to try, still not having luck
++argon scratch order
+    quote request sent, response received
+-itf-rs-store19 OS  ITSRS-6005
+-lc-rs-storage20 OS ITSRS-5796
+-/Data/PrecisionMapping, get HPC automounting
+-samba/sssd/winbind showdown
+    trying to get storage01 talking to puppet, thinking about having sssd use
+    use_fully_qualified_names and do something semi-custom with sshd force
+    command to call login_duo with the right username string
+-znapzend stopped for compliant because inotify watches ran out
+    need to look in to way to be notified when it fails. there are pre and post
+    command config options that could check for completion somehow.
+
+20180724
++OI Booting
+    continued failure, tried creating USB drive per handbook instructions, no joy
+-znapzend stopped for compliant because inotify watches ran out

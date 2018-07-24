@@ -1,0 +1,26 @@
+Rsyslog 
+
+
+## Modules ##
+  Modules allow configuration of rsyslog capabilities. 
+   -imuxsock (input module unix socket) allows OS to send messages, for instance via logger
+   -omfwd (output module forward) allows udp/tcp forwarding of messages to remote host
+
+
+## Actions ##
+Define actions to take on specific triggers, such as forwarding messages to specific log files or remote hosts
+
+To send all messages via UDP to remote host 192.168.33.12 -
+Old (syslogk) format:
+*.* @192.168.33.12:514
+New (RainerScript) format:
+*.* action(type="omfwd" Target="192.168.33.12" Port="514" Protocol="udp" )
+
+
+
+## Rulesets ##
+
+
+
+## Templates ##
+Allows the definition of data structures for messages and filenames

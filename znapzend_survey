@@ -1,0 +1,35 @@
+├── files
+│   ├── root
+│   │   └── znapzend-0.14.1.tar.gz
+│   ├── usr
+│   │   └── lib
+│   │       └── systemd
+│   │           └── system
+│   │               └── znapzend.service
+│   ├── znapzend.xml
+│   └── znapzendinit
+├── manifests
+│   ├── init.pp
+│   ├── packages.pp
+│   ├── solaris_packages.pp
+│   ├── solaris_service.pp
+│   └── znapzend.pp
+├── templates
+│   ├── znapzend-template.epp
+│   └── znapzend-template.erb
+
+CURRENT FUNCTIONALITY
+Znapzend unpacks, builds, ensures pre-requisites, manages service, and is called to create new znapzend configuration files and import them to zfs dataset properties with znapzend import.
+It will run on os.family = RedHat or Solaris.
+
+IMPROVEMENTS
+Build package for znapzend so we don't have to exec gmake install
+Simplify backup/primary snapshot logic and/or specification
+    loop through parameters to compare instead of loads of if statements
+    check for duplicate parameter specifications, 1month is the same as 30days to znapzend
+    make turning snapshot replication on/off clearer
+Set ZFS dataset properties directly instead of exec'ing znapzend import which is slow
+
+NEW FUNCTIONALITY
+Add functionality for multiple backup hosts
+
