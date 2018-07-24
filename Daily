@@ -54,4 +54,20 @@
 20180724
 +OI Booting
     continued failure, tried creating USB drive per handbook instructions, no joy
--znapzend stopped for compliant because inotify watches ran out
+    tried pulling all disks
+    tried rewriting usb installer without header file per wiki...this works
+    boot is hanging on cpu drivers it appears
++znapzend stopped for compliant because inotify watches ran out
+    turned out my custom sysctl.d config file contained a typo which caused this
+    Still need to get znapzend to call for help
++argon scratch order
+    quote request sent, response received, quote expected shortly
+-itf-rs-store19 OS  ITSRS-6005 lc-rs-storage20 OS ITSRS-5796
+    AJ notified delay in optical modules for 10g connections anticipated until
+    9/24
+    Talked with Adam and intend to request 1g connections for all four new hosts
+-/Data/PrecisionMapping, get HPC automounting
+-samba/sssd/winbind showdown
+        trying to get storage01 talking to puppet, thinking about having sssd use
+        use_fully_qualified_names and do something semi-custom with sshd force
+        command to call login_duo with the right username string
