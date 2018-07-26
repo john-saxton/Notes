@@ -72,8 +72,20 @@
         use_fully_qualified_names and do something semi-custom with sshd force
         command to call login_duo with the right username string
 
-20180725
+### 20180725 ###
 -OI Booting
+    try raritan device twiddling (set usb to Linux )
+    try burning dvd?
+    try loading storage01 (this worked without a hitch)
+    some settings comments from illumos list:
+    > With an initial bios setting I was not able to install from USB or with
+    > an USB keyboard.
+    > I needed the following Bios setting to make it working
+    >
+    > - Advanced Bootfeature: enable Windows 7 USB Keyboard support=yes
+    > - Chipset Southbridge:
+    >   Legacy USB support=enable
+    >   XHCI=disable
 -check on sinapse share
 -znapzend
     Still need to get znapzend to call for help
@@ -83,8 +95,61 @@
     AJ notified delay in optical modules for 10g connections anticipated until
     9/24
     Talked with Adam and intend to request 1g connections for all four new hosts
--/Data/PrecisionMapping, get HPC automounting
+    FEX connections are set up, need IPs
+    Joe found 3 SFPs in research switch, ask AJ what about those (AJ says can
+    use these and two more to get single 10g to each new node this week!)
+
++/Data/PrecisionMapping, get HPC automounting
     emailed glenn/brenna, looks like argon.yaml is the place to make the change
+    jeffrey has 20T for IIHG to put here
+    mounting in Argon, still no group from jason for PrecisionMapping share
+-samba/sssd/winbind showdown
+        trying to get storage01 talking to puppet, thinking about having sssd use
+        use_fully_qualified_names and do something semi-custom with sshd force
+        command to call login_duo with the right username string
++technical meeting High Level timeline for July --> November 2018
+  *Argon Homes expansion purchased
+  *Argon nfsscratch expansion purchased
+  *ZFSoL LSS node transition begins
+  *SMBv2 Frontend for LSS (necessary for multiple home servers in Argon)
+  *Retirement of storage01, storage02 in Argon rows & surplus, done by Sept
+  *(Sept)Deploy argon homes 2, 3
+  *Puppet for Legacy LSS management
+  *(Nov)Argon Scratch expansion deployed
+-miles storage03 migration
+-wbarnhart MFK
++nathan access to itf-rs-store03
+    done, /etc/shadow had the account locked passwd -u ndunahoo unlocked it
+
+### 20180726 ###
+-check on sinapse share
+    Regina got back to me, has cleared data but snapshots are holding it. asked
+    if she's ok with snapshot destruction to clear out quota room
+-miles storage03 migration
+-wbarnhart MFK
+-itf-rs-store19 OS  ITSRS-6005 lc-rs-storage20 OS ITSRS-5796
+    asking McKenna to work on itf-rs-store18 load
+    networking in place in LC, loading CentOS
+    LC nodes loaded
+    requested firewall changes, adding addresses to rs-storage-local object
+    group to get 22 and 445 through
+-znapzend
+    puppetized sysctl.d config for inotify watches
+-OI Booting
+-haiming compliant shares
+    received info from haiming on where to start
+    screen session running on lc-rs-storage05 to du directory
+-grelab config changes/connection problem from RHEL 7
+    sec=ntlm seems to fix the issue. hosts matt requested were already exported
+-Au lab shares size
+    screen sessions running on lc-rs-storage10 and lc-rs-storage14 to run du on
+    direct subdirectories of Au shares
+-joe reinhardt lss share
+    created share, need MFK for billing
+-optical modules to ITF
+    taking with tonight to drop off tomorrow morning
+
+### 20180727 ###
 -samba/sssd/winbind showdown
         trying to get storage01 talking to puppet, thinking about having sssd use
         use_fully_qualified_names and do something semi-custom with sshd force
