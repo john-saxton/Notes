@@ -8,53 +8,113 @@ it a pain to implement a new authentication framework
 authentication without knowing the details of it. With PAM you can "plug in"
 different authentication methods without rewriting the client application.
  PAM's configuration file provides a mapping from the applications service
-name to a selection of modules that provide authentication services. 
- When a pam-aware application with a file in /etc/pam.d/, the PAM library 
-loads the configuration for the specified service and constructs four 
-module chains (one for each facility). If no facilities are specified, 
+name to a selection of modules that provide authentication services.
+ When a pam-aware application with a file in /etc/pam.d/, the PAM library
+loads the configuration for the specified service and constructs four
+module chains (one for each facility). If no facilities are specified,
 the configuration for the "other" service is used instead.
+Linux-PAM deals with four separate types of (management) task.
+These are: authentication management; account management; session management;
+and password management
+PAM loadable object files (the modules) are to be located in the following
+directory: /lib/security/ or /lib64/security depending on the architecture.
+When a PAM aware privilege granting application is started, it activates its attachment to the PAM-API. This activation performs a number of tasks, the most important being the reading of the configuration file(s): /etc/pam.conf. Alternatively, this may be the contents of the /etc/pam.d/ directory. The presence of this directory will cause Linux-PAM to ignore /etc/pam.conf.
+
+
 
 PAM config files have at least three fields:
-  Module Type - tells what authentication to use, modules can be stacked 
+**Module Type - tells what authentication to use, modules can be stacked
               which sets multiple user authentication requirements. This is
               the first field in the config file.
     -auth
       determines user identity, usually via password
+      Firstly, it establishes that the user is who they claim to be, by instructing the application to prompt the user for a password or other means of identification. Secondly, the module can grant group membership or other privileges through its credential granting properties.
     -account
       determines whether the user is authorized to use the service
+      this module type performs non-authentication based account management.
     -password
       provides a mechanism for the user to change password
     -session
       things to do before/after user authentication. (mount/unmount home)
 
- PAM modules can be stacked, the application doesn't know about individual
-successes or failure, just the pass/fail of the whole stack.
- Control flags determine how each module affects pass/fail of stack. Modules
-in the stack are executed in their listed order in the config file.
-Control type - determines individual module's effect on full stack. This
-                is the second field in the config file.
-    -requisite
-      module must succeed for stack to pass, if it fails authentication
-      stops immediately.
-    -required
-      module must succeed for stack to pass, if it fails authentication 
-      continues.
-    -sufficient
-      success is sufficient to pass the stack.
-    -optional
-      not critical to pass/fail unless this is the only module for the 
-      service.
+    PAM modules can be stacked, the application doesn't know about individual
+    successes or failure, just the pass/fail of the whole stack.
+    Control flags determine how each module affects pass/fail of stack. Modules
+    in the stack are executed in their listed order in the config file.
 
-Module Path - tells PAM which module to use. defaults to looking in
-              /usr/lib/security (the default PAM module dir). This is the 
-              third field in the config file.
-Module Arguments - further fields in the config file are arguments to the module. such as debug, no_warn, use_first_pass, etc.
+**Control type - determines individual module's effect on full stack.
+  -required
+    failure of such a PAM will ultimately lead to the PAM-API returning failure but only after the remaining stacked modules (for this service and type) have been invoked.
+
+  -requisite
+    like required, however, in the case that such a module returns a failure, control is directly returned to the application or to the superior PAM stack. The return value is that associated with the first required or requisite module to fail. Note, this flag can be used to protect against the possibility of a user getting the opportunity to enter a password over an unsafe medium. It is conceivable that such behavior might inform an attacker of valid accounts on a system. This possibility should be weighed against the not insignificant concerns of exposing a sensitive password in a hostile environment.
+
+  -sufficient
+    if such a module succeeds and no prior required module has failed the PAM framework returns success to the application or to the superior PAM stack immediately without calling any further modules in the stack. A failure of a sufficient module is ignored and processing of the PAM module stack continues unaffected.
+
+  -optional
+    the success or failure of this module is only important if it is the only module in the stack associated with this service+type.
+
+  -include
+    include all lines of given type from the configuration file specified as an argument to this control.
+
+  -substack
+    include all lines of given type from the configuration file specified as an argument to this control. This differs from include in that evaluation of the done and die actions in a substack does not cause skipping the rest of the complete module stack, but only of the substack. Jumps in a substack also can not make evaluation jump out of it, and the whole substack is counted as one module when the jump is done in a parent stack. The reset action will reset the state of a module stack to the state it was in as of beginning of the substack evaluation.
+
+  For the more complicated syntax valid control values have the following form:
+
+        [value1=action1 value2=action2 ...]
+
+  Where valueN corresponds to the return code from the function invoked in the module for which the line is defined. It is selected from one of these: success, open_err, symbol_err, service_err, system_err, buf_err, perm_denied, auth_err, cred_insufficient, authinfo_unavail, user_unknown, maxtries, new_authtok_reqd, acct_expired, session_err, cred_unavail, cred_expired, cred_err, no_module_data, conv_err, authtok_err, authtok_recover_err, authtok_lock_busy, authtok_disable_aging, try_again, ignore, abort, authtok_expired, module_unknown, bad_item, conv_again, incomplete, and default.
+
+  The last of these, default, implies 'all valueN's not mentioned explicitly. Note, the full list of PAM errors is available in /usr/include/security/_pam_types.h. The actionN can take one of the following forms:
+
+  ignore
+  when used with a stack of modules, the module's return status will not contribute to the return code the application obtains.
+
+  bad
+  this action indicates that the return code should be thought of as indicative of the module failing. If this module is the first in the stack to fail, its status value will be used for that of the whole stack.
+
+  die
+  equivalent to bad with the side effect of terminating the module stack and PAM immediately returning to the application.
+
+  ok
+  this tells PAM that the administrator thinks this return code should contribute directly to the return code of the full stack of modules. In other words, if the former state of the stack would lead to a return of PAM_SUCCESS, the module's return code will override this value. Note, if the former state of the stack holds some value that is indicative of a modules failure, this 'ok' value will not be used to override that value.
+
+  done
+  equivalent to ok with the side effect of terminating the module stack and PAM immediately returning to the application.
+
+  N (an unsigned integer)
+  equivalent to ok with the side effect of jumping over the next N modules in the stack. Note that N equal to 0 is not allowed (and it would be identical to ok in such case).
+
+  reset
+  clear all memory of the state of the module stack and start again with the next stacked module.
+
+  Each of the four keywords: required; requisite; sufficient; and optional, have an equivalent expression in terms of the [...] syntax. They are as follows:
+
+  required
+  [success=ok new_authtok_reqd=ok ignore=ignore default=bad]
+
+  requisite
+  [success=ok new_authtok_reqd=ok ignore=ignore default=die]
+
+  sufficient
+  [success=done new_authtok_reqd=done default=ignore]
+
+  optional
+  [success=ok new_authtok_reqd=ok default=ignore]
+
+
+**Module Path - tells PAM which module to use. defaults to looking in
+                /usr/lib/security (the default PAM module dir). This is the
+                third field in the config file.
+**Module Arguments - further fields in the config file are arguments to the module. such as debug, no_warn, use_first_pass, etc.
 
 Some common pam modules:
 -pam_deny.so: denies authentication and tells no one
 -pam_warn.so: logs a syslog message about authentication attempt. stack
              after pam_deny.so to deny and notfiy.
--pam_unix.so: traditional unix authentication. 
+-pam_unix.so: traditional unix authentication.
           account- establishes validity of user and pass can advise or force
                    pass change.
              auth- checks password against databases, configuration is in
@@ -64,4 +124,3 @@ Some common pam modules:
 
 -pam_access.so: intercepts user name and pass, if the name is ftp or anony
                -mous the password is split at @ into PAM_USER and PAM_RHOST
-
