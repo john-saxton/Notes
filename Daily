@@ -177,7 +177,7 @@
 -share option language + storage matrix
 
 ### 20180730 ###
--itf-rs-storage01
++itf-rs-storage01
   need its-rs-admins@iowa.uiowa.edu in sshd_config
   need route to 128.255 with via 172.30.13.1
 -samba/sssd/winbind showdown
@@ -198,25 +198,25 @@
 -ispo 120T shares
 
 ### 20180731 ###
--boeslab remove snapshots
--MORL quota bump
--sasquatch space
--itf-rs-storage01
-  need its-rs-admins@iowa.uiowa.edu in sshd_config
-  need route to 128.255 with via 172.30.13.1
--samba/sssd/winbind showdown
-   gss_accept_sec_context failed with [Unspecified GSS failure.
-   Minor code may provide more information: Request ticket server cifs/itf-rs-storage01.its.uiowa.edu@IOWA.UIOWA.EDU not found in keytab (ticket kvno 3)]
-
--miles storage03 migration
-
--wbarnhart MFK
-
+-ispo 120T shares
+-sasquatch space, email to different address
+-1g connections done everywhere, lets get disks spinning at least
+-simech quote for 2x homes and 1x JBOD scratch
 -haiming compliant shares
+-brian miller compliant share
+
++boeslab remove snapshots
++MORL quota bump
+
+-itf-rs-storage01
+    emailed Dave to ask about winbind config.
+-samba/sssd/winbind showdown
+    gss_accept_sec_context failed with [Unspecified GSS failure.
+    Minor code may provide more information: Request ticket server cifs/itf-rs-storage01.its.uiowa.edu@IOWA.UIOWA.EDU not found in keytab (ticket kvno 3)]
+    take another look at old error logs?
 
 -lc-rs-storage19 appears to have two 1104 connections
     cables are wired correctly, emailed AJ
-
+    -miles storage03 migration
+    -wbarnhart MFK
 -share option language + storage matrix
-
--ispo 120T shares

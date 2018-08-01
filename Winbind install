@@ -1,0 +1,8 @@
+Packages
+sssd
+samba-winbind
+samba
+
+1. kerberos config
+2. sssd install
+3. samba install
